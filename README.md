@@ -1,2 +1,5 @@
 This is first commit readme file.
-this is test by jm
+
+Git test..
+
+hello
