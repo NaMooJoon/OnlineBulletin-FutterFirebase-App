@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'function/bulletin.dart';
+import 'function/praise.dart';
+import 'function/bible.dart';
+import 'function/info.dart';
+import 'home.dart';
+
 class PageViewer extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -63,9 +69,11 @@ class _ChurchPageState extends State<ChurchPages> {
         pageChanged(index);
       },
       children: <Widget>[
-        Red(),
-        Blue(),
-        Yellow(),
+        InfoPage(),
+        BulletinPage(),
+        HomePage(),
+        BiblePage(),
+        PraisePage(),
       ],
     );
   }
@@ -109,59 +117,6 @@ class _ChurchPageState extends State<ChurchPages> {
           },
           items: buildBottomNavBarItems(),
         ),
-      ),
-    );
-  }
-}
-
-
-
-class Red extends StatefulWidget {
-  @override
-  _RedState createState() => _RedState();
-}
-
-class _RedState extends State<Red> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("RED"),),
-      body: Container(
-        color: Colors.red,
-      ),
-    );
-  }
-}
-
-class Blue extends StatefulWidget {
-  @override
-  _BlueState createState() => _BlueState();
-}
-
-class _BlueState extends State<Blue> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("BLUE"),),
-      body: Container(
-        color: Colors.blueAccent,
-      ),
-    );
-  }
-}
-
-class Yellow extends StatefulWidget {
-  @override
-  _YellowState createState() => _YellowState();
-}
-
-class _YellowState extends State<Yellow> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("YELLO"),),
-      body: Container(
-        color: Colors.yellow,
       ),
     );
   }

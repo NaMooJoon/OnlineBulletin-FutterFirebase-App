@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                 ), Positioned(
                   top: 10,
                   right: 10,
-                  child: Text( '클릭 시 자세히 알아보기', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),),
+                  child: Text( '클릭 시 자세히 알아보기 (이거 누르면 PageViewer)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold,),),
                 ), Positioned.fill(
                     child : Material(
                         color: Colors.transparent,
