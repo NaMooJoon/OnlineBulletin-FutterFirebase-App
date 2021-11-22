@@ -49,4 +49,5 @@ class App extends StatelessWidget {
         return CircularProgressIndicator();
       },
     );
-  }}
+  }
+}

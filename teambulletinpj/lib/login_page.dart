@@ -15,7 +15,7 @@ class LoginPage extends StatelessWidget{
             OutlinedButton.icon(
                 onPressed: () {
                   final state = Provider.of<LoginProvider>(context, listen: false);
-                  state.signInWithGoogle().whenComplete(() =>  Navigator.pushReplacementNamed(context, '/login'));
+                  state.signInWithGoogle().whenComplete(() =>  Navigator.pushReplacementNamed(context, '/search'));
                 },
                 icon: FaIcon(FontAwesomeIcons.google, color: Colors.blue),
                 label: Text('Google SignIn')),

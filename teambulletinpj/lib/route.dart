@@ -14,7 +14,11 @@
 
 import 'package:flutter/material.dart';
 
+import 'home.dart';
 import 'login_page.dart';
+import 'register.dart';
+import 'search.dart';
+
 
 
 // TODO: Convert ShrineApp to stateful widget (104)
@@ -33,6 +37,9 @@ class BulletinApp extends StatelessWidget {
         initialRoute: '/login',
         routes:{
           '/login':(context)=> LoginPage(),
+          '/register': (context) => RegisterPage(),
+          '/search': (context) => SearchPage(),
+          '/home' : (context) => HomePage(),
         }
       // TODO: Add a theme (103)
     );
