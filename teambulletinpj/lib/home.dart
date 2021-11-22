@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         leading: IconButton(
           icon:Icon(Icons.menu, color: Colors.black,),
-          onPressed: () {},
+          onPressed: () {Navigator.of(context).pushNamed('/pageviewer');},
         ),
         backgroundColor: Colors.transparent,
         centerTitle: true,
