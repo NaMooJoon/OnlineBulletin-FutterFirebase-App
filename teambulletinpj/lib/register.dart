@@ -77,7 +77,7 @@ class _RegisterPageState extends State<RegisterPage> {
               height: 50,
               child: FlatButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed('/search');
+                  Navigator.of(context).pushNamed('/home');
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),

@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 import 'login_page.dart';
+import 'pageviewer.dart';
 import 'register.dart';
 import 'search.dart';
 
@@ -40,6 +41,7 @@ class BulletinApp extends StatelessWidget {
           '/register': (context) => RegisterPage(),
           '/search': (context) => SearchPage(),
           '/home' : (context) => HomePage(),
+          '/pageviewer' : (context) => PageViewer(),
         }
       // TODO: Add a theme (103)
     );
