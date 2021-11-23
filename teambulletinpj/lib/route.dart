@@ -15,11 +15,10 @@
 import 'package:flutter/material.dart';
 
 import 'home.dart';
-import 'login_page.dart';
+import 'login.dart';
+import 'pageviewer.dart';
 import 'register.dart';
 import 'search.dart';
-
-
 
 // TODO: Convert ShrineApp to stateful widget (104)
 class BulletinApp extends StatelessWidget {
@@ -40,7 +39,9 @@ class BulletinApp extends StatelessWidget {
           '/register': (context) => RegisterPage(),
           '/search': (context) => SearchPage(),
           '/home' : (context) => HomePage(),
+          '/pageviewer' : (context) => PageViewer(),
         }
       // TODO: Add a theme (103)
     );
-  }}
+  }
+}
