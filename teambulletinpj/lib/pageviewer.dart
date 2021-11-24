@@ -30,7 +30,7 @@ class ChurchPages extends StatefulWidget {
 
 class _ChurchPageState extends State<ChurchPages> {
 
-  int bottomSelectedIndex = 0;
+  int bottomSelectedIndex = 1;
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
