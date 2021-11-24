@@ -24,29 +24,29 @@ class ChurchPages extends StatefulWidget {
 
 class _ChurchPageState extends State<ChurchPages> {
 
-  int bottomSelectedIndex = 0;
+  int bottomSelectedIndex = 1;
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
       BottomNavigationBarItem(
           icon: new Icon(FontAwesomeIcons.church),
-          title: new Text('Red'),
+          title: new Text('Inform'),
       ),
       BottomNavigationBarItem(
         icon: new Icon(FontAwesomeIcons.bookOpen),
-        title: new Text('Blue'),
+        title: new Text('Bulletin'),
       ),
       BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.thLarge),
-          title: Text('Yellow')
+          title: Text('Home')
       ),
       BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.bible),
-          title: Text('asdfa')
+          title: Text('Bible')
       ),
       BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.itunesNote),
-          title: Text('sdfow')
+          title: Text('Hymn')
       ),
     ];
   }
@@ -96,20 +96,25 @@ class _ChurchPageState extends State<ChurchPages> {
       body: buildPageView(),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
-          // sets the background color of the `BottomNavigationBar`
-            canvasColor: Color.fromRGBO(186, 186, 186, 1.0),
-            // sets the active color of the `BottomNavigationBar` if `Brightness` is light
+            indicatorColor: Colors.green.shade100,
+            // canvasColor: Color.fromRGBO(186, 186, 186, 1.0),
             primaryColor: Colors.red,
             textTheme: Theme
                 .of(context)
                 .textTheme
                 .copyWith(caption: new TextStyle(color: Colors.yellow))),
-        child: BottomNavigationBar(
-          currentIndex: bottomSelectedIndex,
-          onTap: (index) {
-            bottomTapped(index);
-          },
-          items: buildBottomNavBarItems(),
+        child: SizedBox(
+          height: 50,
+          child: BottomNavigationBar(
+            unselectedItemColor: Colors.black45,
+            selectedItemColor: Colors.green,
+            currentIndex: bottomSelectedIndex,
+            iconSize: 20,
+            onTap: (index) {
+              bottomTapped(index);
+            },
+            items: buildBottomNavBarItems(),
+          ),
         ),
       ),
     );
