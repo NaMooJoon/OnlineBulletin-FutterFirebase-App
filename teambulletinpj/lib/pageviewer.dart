@@ -11,13 +11,7 @@ class PageViewer extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Church PageViewer',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ChurchPages(),
-    );
+    return ChurchPages();
   }
 }
 
@@ -30,7 +24,7 @@ class ChurchPages extends StatefulWidget {
 
 class _ChurchPageState extends State<ChurchPages> {
 
-  int bottomSelectedIndex = 0;
+  int bottomSelectedIndex = 1;
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
