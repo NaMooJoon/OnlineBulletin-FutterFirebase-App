@@ -16,7 +16,6 @@ class _BiblePageState extends State<BiblePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: true,
@@ -33,7 +32,7 @@ class _BiblePageState extends State<BiblePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const SizedBox(height: 80.0),
+            SizedBox(height: 10,),
             Container(
               decoration: BoxDecoration(
                 color: Colors.black12,

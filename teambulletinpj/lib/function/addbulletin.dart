@@ -90,7 +90,7 @@ class _CapturedBulletinPage extends State<CapturedBulletin> {
 }
 
 
-
+/*
 class _HtmlEditorExampleState extends State<HtmlEditorExample> {
   String result = '';
   final HtmlEditorController controller = HtmlEditorController();
@@ -519,6 +519,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
   }
 }
 
+
 class HtmlEditorExample extends StatefulWidget {
   HtmlEditorExample({Key? key, required this.title}) : super(key: key);
 
@@ -529,12 +530,11 @@ class HtmlEditorExample extends StatefulWidget {
     return user
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get()
-        .then((AsyncSnapshot<DocumentSnapshot> snapshot) async {
-
-        });
+        .then((AsyncSnapshot<DocumentSnapshot> snapshot) async {});
     }
   }
 
   @override
   _HtmlEditorExampleState createState() => _HtmlEditorExampleState();
 }
+ */

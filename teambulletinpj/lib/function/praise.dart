@@ -68,6 +68,7 @@ class _PraisePageState extends State<PraisePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(height: 20,),
               _selectedIndex < 0 ?
               Container(
                   width: 350,

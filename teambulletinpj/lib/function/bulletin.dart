@@ -40,12 +40,12 @@ class _BulletinPageState extends State<BulletinPage> {
           children: <Widget>[
             const SizedBox(height: 80.0),
             TextButton(
-              onPressed: (){
+              onPressed: (){/*
                 Navigator.of(context).push (
                   MaterialPageRoute(
                     builder: (BuildContext context) => HtmlEditorExample(title: "Bulletin editor"),
                   ),
-                );
+                );*/
               },
               child: Text("주보가 없습니다.")
             ),
@@ -74,11 +74,11 @@ class _BulletinPageState extends State<BulletinPage> {
             child: Icon(FontAwesomeIcons.pen),
             label: "Writing",
             onTap: () {
-              Navigator.of(context).push (
+              /*Navigator.of(context).push (
                 MaterialPageRoute(
                   builder: (BuildContext context) => HtmlEditorExample(title: "Bulletin editor"),
                 ),
-              );
+              );*/
             }
           ),
         ],

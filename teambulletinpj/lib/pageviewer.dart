@@ -4,41 +4,36 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'function/bulletin.dart';
 import 'function/praise.dart';
 import 'function/bible.dart';
-import 'function/info.dart';
-import 'home.dart';
+import 'function/information.dart';
+import 'function/story.dart';
 
-class PageViewer extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return ChurchPages();
-  }
-}
+class PageViewer extends StatefulWidget {
+  PageViewer({Key? key, required this.initialPage}) : super(key: key);
 
-class ChurchPages extends StatefulWidget {
-  ChurchPages({Key? key}) : super(key: key);
+  final int initialPage;
 
   @override
-  _ChurchPageState createState() => _ChurchPageState();
+  _PageViewerState createState() => _PageViewerState();
 }
 
-class _ChurchPageState extends State<ChurchPages> {
+class _PageViewerState extends State<PageViewer> {
 
-  int bottomSelectedIndex = 1;
+  late int _bottomSelectedIndex;
+  late PageController _pageController;
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
       BottomNavigationBarItem(
-          icon: new Icon(FontAwesomeIcons.church),
-          title: new Text('Inform'),
+          icon: new Icon(FontAwesomeIcons.camera),
+          title: new Text('Story'),
       ),
       BottomNavigationBarItem(
         icon: new Icon(FontAwesomeIcons.bookOpen),
         title: new Text('Bulletin'),
       ),
       BottomNavigationBarItem(
-          icon: Icon(FontAwesomeIcons.thLarge),
-          title: Text('Home')
+          icon: Icon(FontAwesomeIcons.church),
+          title: Text('Inform')
       ),
       BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.bible),
@@ -51,21 +46,21 @@ class _ChurchPageState extends State<ChurchPages> {
     ];
   }
 
-  PageController pageController = PageController(
-    initialPage: 1,
-    keepPage: true,
-  );
-
   Widget buildPageView() {
+    _pageController = PageController(
+      initialPage: widget.initialPage,
+      keepPage: true,
+    );
+
     return PageView(
-      controller: pageController,
+      controller: _pageController,
       onPageChanged: (index) {
         pageChanged(index);
       },
       children: <Widget>[
-        InfoPage(),
+        StoryPage(),
         BulletinPage(),
-        HomePage(),
+        InformationPage(),
         BiblePage(),
         PraisePage(),
       ],
@@ -74,19 +69,20 @@ class _ChurchPageState extends State<ChurchPages> {
 
   @override
   void initState() {
+    _bottomSelectedIndex = widget.initialPage;
     super.initState();
   }
 
   void pageChanged(int index) {
     setState(() {
-      bottomSelectedIndex = index;
+      _bottomSelectedIndex = index;
     });
   }
 
   void bottomTapped(int index) {
     setState(() {
-      bottomSelectedIndex = index;
-      pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+      _bottomSelectedIndex = index;
+      _pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
   }
 
@@ -108,7 +104,7 @@ class _ChurchPageState extends State<ChurchPages> {
           child: BottomNavigationBar(
             unselectedItemColor: Colors.black45,
             selectedItemColor: Colors.green,
-            currentIndex: bottomSelectedIndex,
+            currentIndex: _bottomSelectedIndex,
             iconSize: 20,
             onTap: (index) {
               bottomTapped(index);

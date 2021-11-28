@@ -14,6 +14,9 @@ class LoginProvider extends ChangeNotifier {
   late User _user;
   User get user => _user;
 
+  List<String> _churchList = [];
+  List<String> get churchList => _churchList;
+
   Future<User> signInWithGoogle() async {
     GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
     GoogleSignInAuthentication googleAuth =
@@ -31,7 +34,13 @@ class LoginProvider extends ChangeNotifier {
     _isLoggedInWithGoogle = true;
     _user = user!;
 
-    updateGoogleUserData(user);
+    DocumentSnapshot data = await _database.collection("user").doc(user.uid).get();
+    if(data.exists) {
+      _churchList = data['churchList']?.cast<String>();
+    } else {
+      updateGoogleUserData(user);
+    }
+
     notifyListeners();
 
     return user;
@@ -42,6 +51,7 @@ class LoginProvider extends ChangeNotifier {
       'email': user.email,
       'name': user.displayName,
       'uid': user.uid,
+      'churchList' : [],
     });
   }
 
@@ -51,5 +61,13 @@ class LoginProvider extends ChangeNotifier {
       _isLoggedInWithGoogle = false;
       notifyListeners();
     }
+  }
+
+  void updateChurchData(String churchId) {
+    _churchList.add(churchId);
+    _database.collection('user').doc(user.uid).update({
+      'churchList' : _churchList,
+    });
+    notifyListeners();
   }
 }

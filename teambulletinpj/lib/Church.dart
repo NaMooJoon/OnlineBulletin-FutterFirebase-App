@@ -9,7 +9,7 @@ class Church {
     required this.master,
     required this.pastor,
     required this.memberList,
-    required this.createdAt,
+    //required this.createdAt,
   });
 
   final String id;
@@ -19,7 +19,7 @@ class Church {
   final String master;
   final String pastor;
   final List<String> memberList;
-  final Timestamp createdAt;
+  //final Timestamp createdAt;
 
   @override
   String toString() => churchName;
