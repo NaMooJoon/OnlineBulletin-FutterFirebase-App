@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shrine/function/storystruct.dart';
 
 import 'infodetail.dart';
+import 'infostories.dart';
 
 class InfoPage extends StatefulWidget {
   InfoPage({Key? key}) : super(key: key);
@@ -12,27 +15,65 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage> {
+  List<Story> story = [];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        leading: TextButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed('/login');
-          },
-          child: Text("Back"),
-        ),
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        elevation: 0.0,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text(
-          '교회 소식',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-        ),
-      ),
-      body: ListView(
+    return FutureBuilder(
+      future: FirebaseFirestore.instance.collection('infostory').get(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        story = snapshot.data!.docs.map<Story>((DocumentSnapshot document) {
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+            return Story(
+                username: data['name'],
+                contentimgUrl: data['contentimgUrl'],
+                updatetime: data['updatetime'],
+                content: data['content'],
+                userimgUrl: data['userimgUrl'],
+                likeUsers: data['likeUsers'].length,
+                likeUserList: data['likeUsers'],
+                docid: document.id,
+                uid: data['uid'],
+            );
+          }).toList();
+
+          return CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                leading: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/login');
+                  },
+                  child: Text("Back"),
+                ),
+                backgroundColor: Colors.transparent,
+                centerTitle: true,
+                elevation: 0.0,
+                iconTheme: IconThemeData(color: Colors.black),
+                title: Text(
+                  '교회 소식',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    final Story post = story[index];
+                    return PostContainer(post: post);
+                  },
+                  childCount: story.length,
+                ),
+              )
+            ],
+          );
+      },
+    );
+      /*ListView(
         children: [
           const SizedBox(height: 10.0),
           Container(
@@ -111,8 +152,7 @@ class _InfoPageState extends State<InfoPage> {
             ),
           )
         ],
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+      ),*/ // This trailing comma makes auto-formatting nicer for build methods.
   }
 }
 
