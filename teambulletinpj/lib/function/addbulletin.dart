@@ -12,6 +12,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class CapturedBulletin extends StatefulWidget {
   CapturedBulletin({Key? key}) : super(key: key);
@@ -90,10 +91,20 @@ class _CapturedBulletinPage extends State<CapturedBulletin> {
 }
 
 
-/*
+
 class _HtmlEditorExampleState extends State<HtmlEditorExample> {
   String result = '';
   final HtmlEditorController controller = HtmlEditorController();
+
+  Future<void> addBulletin(String bulletinId, var text) {
+    return FirebaseFirestore.instance.collection('church')
+        .doc(bulletinId)
+        .collection('bulletin')
+        .add({
+      'timestamp' : DateTime.now().millisecondsSinceEpoch,
+      'html' : text,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,9 +294,8 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           txt =
                           '<text removed due to base-64 data, displaying the text could cause the app to crash>';
                         }
-                        setState(() {
-                          result = txt;
-                        });
+                        addBulletin('YVqEHX4AbfYT17nMncIE', txt);
+                        Navigator.pop(context);
                       },
                       child: Text(
                         'Submit',
@@ -400,19 +410,40 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     SizedBox(
                       width: 16,
                     ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Theme.of(context).accentColor),
-                      onPressed: () {
-                        controller.insertNetworkImage(
-                            'https://t1.daumcdn.net/thumb/R720x0.fjpg/?fname=http://t1.daumcdn.net/brunch/service/guest/image/-Xqw2wqXAPnh1vAr1-3IToJ8sBQ.PNG',
-                            filename: 'Google network image');
-                      },
-                      child: Text(
-                        'Insert network image',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                              backgroundColor: Theme
+                                  .of(context)
+                                  .accentColor),
+                          onPressed: () {
+                            controller.insertNetworkImage(
+                                'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2',
+                                filename: 'Google network image');
+                          },
+                          child: Text(
+                            'Insert network image',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                    // Consumer<ChurchProvider>(
+                    //   builder: (context, churchProvider, child) {
+                    //     return TextButton(
+                    //       style: TextButton.styleFrom(
+                    //           backgroundColor: Theme
+                    //               .of(context)
+                    //               .accentColor),
+                    //       onPressed: () {
+                    //         controller.insertNetworkImage(
+                    //             churchProvider.church.imageURL,
+                    //             filename: 'Google network image');
+                    //       },
+                    //       child: Text(
+                    //         'Insert network image',
+                    //         style: TextStyle(color: Colors.white),
+                    //       ),
+                    //     );
+                    //   }
+                    // ),
                   ],
                 ),
               ),
@@ -524,17 +555,7 @@ class HtmlEditorExample extends StatefulWidget {
   HtmlEditorExample({Key? key, required this.title}) : super(key: key);
 
   final String title;
-  CollectionReference user = FirebaseFirestore.instance.collection('user');
-
-  Future<void> getSelectedChurch() {
-    return user
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((AsyncSnapshot<DocumentSnapshot> snapshot) async {});
-    }
-  }
 
   @override
   _HtmlEditorExampleState createState() => _HtmlEditorExampleState();
 }
- */

@@ -1,12 +1,11 @@
-import 'dart:io';
-
-import 'package:document_scanner_flutter/configs/configs.dart';
-import 'package:document_scanner_flutter/document_scanner_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shrine/function/addbulletin.dart';
+import 'package:shrine/provider/churchProvider.dart';
+
 
 import 'addbulletin.dart';
 
@@ -18,6 +17,22 @@ class BulletinPage extends StatefulWidget {
 }
 
 class _BulletinPageState extends State<BulletinPage> {
+
+  final List list = [];
+  Future<void> getBulletin() async {
+    final provider = Provider.of<ChurchProvider>(context, listen: false);
+    FirebaseFirestore.instance
+        .collection('church')
+        .doc(provider.church.id)
+        .collection('bulletin')
+        .snapshots()
+        .listen((snapshot) {
+      snapshot.docs.forEach((document) {
+        list.add(document);
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,15 +55,16 @@ class _BulletinPageState extends State<BulletinPage> {
           children: <Widget>[
             const SizedBox(height: 80.0),
             TextButton(
-              onPressed: (){/*
+              onPressed: (){
                 Navigator.of(context).push (
                   MaterialPageRoute(
                     builder: (BuildContext context) => HtmlEditorExample(title: "Bulletin editor"),
                   ),
-                );*/
+                );
               },
               child: Text("주보가 없습니다.")
             ),
+            // bulletins(),
             const SizedBox(height: 80.0),
           ],
         ),
@@ -68,7 +84,6 @@ class _BulletinPageState extends State<BulletinPage> {
                 ),
               );
             }
-
           ),
           SpeedDialChild(
             child: Icon(FontAwesomeIcons.pen),
@@ -85,5 +100,12 @@ class _BulletinPageState extends State<BulletinPage> {
       ),
     );
   }
+
+  // Widget bulletins() {
+  //   var htmlData = '<p><img src="https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2" style="width: 390.286px;" data-filename="Google network image"></p><h2>Handong</h2>';
+  //   return Html(
+  //       data: htmlData,
+  //   );
+  // }
 }
 
