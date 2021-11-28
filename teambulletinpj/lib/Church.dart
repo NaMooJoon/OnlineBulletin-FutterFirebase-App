@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Church {
   const Church({
     required this.id,
@@ -17,7 +19,7 @@ class Church {
   final String master;
   final String pastor;
   final List<String> memberList;
-  //final Timestamp createdAt;
+  final Timestamp createdAt;
 
   @override
   String toString() => churchName;
