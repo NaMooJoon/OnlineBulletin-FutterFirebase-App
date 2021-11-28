@@ -43,7 +43,7 @@ class _BulletinPageState extends State<BulletinPage> {
               onPressed: (){
                 Navigator.of(context).push (
                   MaterialPageRoute(
-                    builder: (BuildContext context) => WriteBulletin(),
+                    builder: (BuildContext context) => HtmlEditorExample(title: "Bulletin editor"),
                   ),
                 );
               },
@@ -76,7 +76,7 @@ class _BulletinPageState extends State<BulletinPage> {
             onTap: () {
               Navigator.of(context).push (
                 MaterialPageRoute(
-                  builder: (BuildContext context) => WriteBulletin(),
+                  builder: (BuildContext context) => HtmlEditorExample(title: "Bulletin editor"),
                 ),
               );
             }
