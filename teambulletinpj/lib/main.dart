@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shrine/provider/churchProvider.dart';
 import 'package:shrine/provider/like_provider.dart';
 import 'package:shrine/provider/login_provider.dart';
 import 'package:shrine/route.dart';
@@ -12,6 +13,7 @@ void main() => runApp(
         //ChangeNotifierProvider(create: (context) => DropDownProvider()),
         ChangeNotifierProvider(create: (context) => LoginProvider()),
         ChangeNotifierProvider(create: (context) => LikeProvider()),
+        ChangeNotifierProvider(create: (context) => ChurchProvider()),
       ],
       child: App(),
     ));
