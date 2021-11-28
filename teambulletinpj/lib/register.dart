@@ -20,7 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
           leading: IconButton(
             icon:Icon(Icons.close, color: Colors.black,),
             onPressed: () {
-              Navigator.of(context).pushNamed('/search');
+              Navigator.of(context).pop();
             },
           ),
           elevation: 0.0,

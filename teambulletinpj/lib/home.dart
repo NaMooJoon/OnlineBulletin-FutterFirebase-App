@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'provider/login_provider.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -9,6 +12,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _showChurchList = false;
+  int _selectedChurch = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,53 +32,101 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       drawer: Drawer (
-          child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                const DrawerHeader(
-                  padding: EdgeInsets.only(top:100, left:30),
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
+          child: Consumer<LoginProvider>(
+            builder: (context, loginState, _) => ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  SizedBox(
+                    height: 260,
+                    child: DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.network(loginState.user.photoURL!),
+                            SizedBox(height:24.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  loginState.user.displayName!,
+                                  style: TextStyle(color: Colors.white, fontSize: 28.0, fontWeight: FontWeight.bold)
+                                ),
+                                SizedBox(width:8),
+                                Text(
+                                    '님',
+                                    style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold)
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                  child: Text(
-                      'Pages',
-                      style: TextStyle(color: Colors.white, fontSize: 28.0)
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal:30),
+                    title: const Text('등록된 교회',),
+                    onTap: () {
+                      setState(() {
+                        _showChurchList = !_showChurchList;
+                      });
+                    },
+                    leading: const Icon(Icons.playlist_add_check, color: Colors.green),
+                    trailing: _showChurchList ?
+                    Icon(Icons.arrow_drop_up, color: Colors.green) :
+                    Icon(Icons.arrow_drop_down, color: Colors.green),
                   ),
-                ),
-                ListTile(
-                  contentPadding: const EdgeInsets.only(left:30),
-                  title: const Text(
-                    'Home',
-                    style: TextStyle(color: Colors.grey),
+                  _showChurchList ?
+                  ListView.builder(
+                      padding: const EdgeInsets.all(0.0),
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: 3,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            ListTile(
+                                contentPadding: const EdgeInsets.only(left:60),
+                                title: Text(
+                                  'Church $index',
+                                  style: _selectedChurch == index ?
+                                  TextStyle(color:Colors.green,fontWeight: FontWeight.bold) :
+                                  TextStyle(color:Colors.grey),
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    _selectedChurch = index;
+                                    Navigator.of(context).pop();
+                                  });
+                                }
+                            ),
+                          ],
+                        );
+                      }
+                  ) : SizedBox(),
+                  ListTile(
+                    contentPadding: const EdgeInsets.only(left:30),
+                    title: const Text('교회 등록하기',),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    leading: const Icon(Icons.playlist_add, color: Colors.green),
                   ),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/home');
-                  },
-                  leading: const Icon(Icons.home, color: Colors.blue),
-                ),
-                ListTile(
-                  contentPadding: const EdgeInsets.only(left:30),
-                  title: const Text(
-                    'Search',
-                    style: TextStyle(color: Colors.grey),
+                  ListTile(
+                    contentPadding: const EdgeInsets.only(left:30),
+                    title: const Text('로그아웃',),
+                    onTap: () {
+                      loginState.signOut();
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    leading: const Icon(Icons.logout, color: Colors.green),
                   ),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/search');
-                  },
-                  leading: const Icon(Icons.search, color: Colors.blue),
-                ),
-                ListTile(
-                  contentPadding: const EdgeInsets.only(left:30),
-                  title: const Text(
-                    'Log Out',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                  leading: const Icon(Icons.logout, color: Colors.blue),
-                ),
-              ]
+                ]
+            ),
           )
       ),
       body: Center(
