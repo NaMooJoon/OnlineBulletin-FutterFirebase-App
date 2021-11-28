@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   final provider = Provider.of<LoginProvider>(context, listen: false);
                   provider.signInWithGoogle().then((User user){
-                    Navigator.of(context).pushNamed('/search');
+                    Navigator.of(context).pushNamed('/home');
                   });
                 },
                 shape: RoundedRectangleBorder(
