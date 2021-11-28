@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shrine/provider/churchProvider.dart';
 
 import 'infodetail.dart';
 
@@ -25,80 +27,105 @@ class _InformationPageState extends State<InformationPage> {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
-      body: ListView(
-        children: [
-          const SizedBox(height: 10.0),
-          Image.network(
-            'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2',
-            width: 420,
-            height: 200,
-            fit: BoxFit.fill,
-          ),
-          const SizedBox(height: 10.0),
-          Container(
-            padding: EdgeInsets.all(35),
-            child: Column(
-              children: [
-                Row(
+      body: Consumer<ChurchProvider>(
+        builder: (context, churchState, _) {
+          return ListView(
+            children: [
+              const SizedBox(height: 10.0),
+              Image.network(
+                churchState.church.imageURL,
+                width: 420,
+                height: 200,
+                fit: BoxFit.fill,
+              ),
+              const SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.all(35),
+                child: Column(
                   children: [
-                    Text(
-                      "전화번호",
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-                Divider(color: Colors.grey, thickness: 0.5),
-                Row(
-                  children: [
-                    Text(
-                      "위치",
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-                Divider(color: Colors.grey, thickness: 0.5),
-                Row(
-                  children: [
-                    Text(
-                      "담임목사: ",
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-                Divider(color: Colors.grey, thickness: 0.5),
-                const SizedBox(height: 35.0),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "교회소식",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17,
-                        color: Colors.black,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          "전화번호: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          churchState.church.callNumber,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        )
+                      ],
+                    ),
+                    Divider(color: Colors.grey, thickness: 0.5),
+                    Row(
+                      children: [
+                        Text(
+                          "위치: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          churchState.church.location,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        )
+                      ],
+                    ),
+                    Divider(color: Colors.grey, thickness: 0.5),
+                    Row(
+                      children: [
+                        Text(
+                          "담임목사: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          churchState.church.pastor,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        )
+                      ],
+                    ),
+                    Divider(color: Colors.grey, thickness: 0.5),
+                    const SizedBox(height: 35.0),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "교회소식",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(color: Colors.grey, thickness: 0.5),
+                    Column(
+                      children: [
+                        CardList(),
+                      ],
                     ),
                   ],
                 ),
-                Divider(color: Colors.grey, thickness: 0.5),
-                Column(
-                  children: [
-                    CardList(),
-                  ],
-                ),
-              ],
-            ),
-          )
-        ],
+              )
+            ],
+          );
+        }
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
