@@ -89,11 +89,11 @@ class _BulletinPageState extends State<BulletinPage> {
             child: Icon(FontAwesomeIcons.pen),
             label: "Writing",
             onTap: () {
-              /*Navigator.of(context).push (
+              Navigator.of(context).push (
                 MaterialPageRoute(
                   builder: (BuildContext context) => HtmlEditorExample(title: "Bulletin editor"),
                 ),
-              );*/
+              );
             }
           ),
         ],
