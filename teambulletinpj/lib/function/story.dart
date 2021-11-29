@@ -42,12 +42,6 @@ class _StoryPageState extends State<StoryPage> {
         return CustomScrollView(
           slivers: [
             SliverAppBar(
-              leading: TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/login');
-                },
-                child: Text("Back"),
-              ),
               backgroundColor: Colors.transparent,
               centerTitle: true,
               elevation: 0.0,

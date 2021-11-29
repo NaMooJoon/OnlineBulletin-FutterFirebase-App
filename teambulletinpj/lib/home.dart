@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Church> _churchList = [];
+  List<String> _existList = [];
   bool _showChurchList = false;
   int _selectedChurch = 0;
 
@@ -38,20 +39,20 @@ class _HomePageState extends State<HomePage> {
 
         for(String churchId in churchIdList) {
           for (DocumentSnapshot document in snapshot.data!.docs) {
-            if (churchId == document.id) {
-              Map<String, dynamic> data = document.data()! as Map<
-                  String,
-                  dynamic>;
+            if (churchId == document.id && !(_existList.contains(churchId))) {
+              Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
               _churchList.add(
                   Church(
                     id: document.id,
                     churchName: data['churchName'],
                     location: data['location'],
+                    callNumber: data['callNumber'],
                     imageURL: data['imageURL'],
                     master: data['master'],
                     pastor: data['pastor'],
                     memberList: data['memberList']?.cast<String>(),
                   ));
+              _existList.add(churchId);
               break;
             }
           }
@@ -136,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                                   ListTile(
                                       contentPadding: const EdgeInsets.only(left:60),
                                       title: Text(
-                                        _churchList[_selectedChurch].churchName,
+                                        _churchList[index].churchName,
                                         style: _selectedChurch == index ?
                                         TextStyle(color:Colors.green,fontWeight: FontWeight.bold) :
                                         TextStyle(color:Colors.grey),
@@ -147,6 +148,7 @@ class _HomePageState extends State<HomePage> {
                                         setState(() {
                                           _selectedChurch = index;
                                         });
+                                        Navigator.pop(context);
                                       }
                                   )
                                 ],
