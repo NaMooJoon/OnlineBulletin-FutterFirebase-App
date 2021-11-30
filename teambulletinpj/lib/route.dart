@@ -14,6 +14,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'function/addstory.dart';
+import 'function/comment.dart';
 import 'home.dart';
 import 'login.dart';
 import 'register.dart';
@@ -38,6 +40,8 @@ class BulletinApp extends StatelessWidget {
           '/register': (context) => RegisterPage(),
           '/search': (context) => SearchPage(),
           '/home' : (context) => HomePage(),
+          '/addstory':(context) => addPage(),
+          '/comment':(context) => CommentPage(),
         }
       // TODO: Add a theme (103)
     );

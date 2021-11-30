@@ -11,6 +11,10 @@ class Story {
     required this.uid,
     required this.likeUsers,
     required this.likeUserList,
+    //required this.comment_content,
+    //required this.comment_userid,
+    //required this.comment_username,
+    //required this.comment_userimgUrl,
     //required this.url,
     //required this.name,
     //required this.price,
@@ -29,6 +33,10 @@ class Story {
   final String uid;
   final int likeUsers;
   final List<dynamic> likeUserList;
+  //final String comment_content;
+  //final String comment_userid;
+  //final String comment_username;
+  //final String
   //final String url;
   //final String name;
   //final int price;

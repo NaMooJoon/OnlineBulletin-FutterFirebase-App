@@ -29,7 +29,7 @@ class PostContainer extends StatelessWidget {
               ],
             ),
           ),
-          if (post.contentimgUrl != null) ...[
+          if (post.contentimgUrl != "") ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Image.network(post.contentimgUrl),
@@ -53,35 +53,39 @@ class _PostStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late bool liked;
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
+    final Likeprovider = Provider.of<LikeProvider>(context, listen: false);
+    if(post.likeUserList.contains(loginprovider.user.uid)){
+       Likeprovider.setLiked();
+    }
+    else{
+       Likeprovider.setdisLiked();
+    }
+    liked = Likeprovider.isliked;
     int num = post.likeUsers;
     return Consumer<LikeProvider>(
       builder: (context,appState,_){
-        if(post.likeUserList.contains(loginprovider.user.uid)){
-          appState.setLiked();
-        }
-        else{
-          appState.setdisLiked();
-        }
-        //appState.isLiked(loginprovider.user.uid, post.docid);
         return Column(
           children: [
             Row(
               children: [
                 IconButton(
                   onPressed: (){
-                    if(appState.isliked == false){
-                      post.likeUserList.add(loginprovider.user.uid);
+                    if(liked == false){
+                      //post.likeUserList.add(loginprovider.user.uid);
                       appState.addLike(loginprovider.user.uid, post.docid);
+                      liked = !liked;
                       num = num + 1;
                     }
                     else{
-                      post.likeUserList.remove(loginprovider.user.uid);
+                      //post.likeUserList.remove(loginprovider.user.uid);
                       appState.deleteLike(loginprovider.user.uid, post.docid);
+                      liked = !liked;
                       num = num - 1;
                     }
                   },
-                  icon: appState.isliked ? const Icon(
+                  icon: liked ? const Icon(
                     Icons.favorite,
                     size: 25.0,
                     color: Colors.green,
@@ -93,18 +97,22 @@ class _PostStats extends StatelessWidget {
                   )
                 ),
                 const SizedBox(width: 9.0),
-                Container(
+                IconButton(
+                  icon: Icon(
+                  Icons.mode_comment_outlined,
+                  size: 22.0,
+                  color: Colors.green,
+                ), onPressed: () {
+                    Navigator.pushNamed(context, '/comment');
+                },)
+                /*Container(
                   padding: const EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
                     color: Colors.green,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.mode_comment_outlined,
-                    size: 20.0,
-                    color: Colors.white,
-                  ),
-                )
+                  child:
+                ),*/
               ],
             ),
             const SizedBox(height: 7),
