@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shrine/function/comment.dart';
+import 'package:shrine/function/editstory.dart';
 import 'package:shrine/function/storystruct.dart';
 import 'package:shrine/provider/like_provider.dart';
 import 'package:shrine/provider/login_provider.dart';
@@ -29,7 +32,7 @@ class PostContainer extends StatelessWidget {
               ],
             ),
           ),
-          if (post.contentimgUrl != null) ...[
+          if (post.contentimgUrl != "") ...[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Image.network(post.contentimgUrl),
@@ -53,35 +56,39 @@ class _PostStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late bool liked;
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
+    final Likeprovider = Provider.of<LikeProvider>(context, listen: false);
+    if(post.likeUserList.contains(loginprovider.user.uid)){
+       Likeprovider.setLiked();
+    }
+    else{
+       Likeprovider.setdisLiked();
+    }
+    liked = Likeprovider.isliked;
     int num = post.likeUsers;
     return Consumer<LikeProvider>(
       builder: (context,appState,_){
-        if(post.likeUserList.contains(loginprovider.user.uid)){
-          appState.setLiked();
-        }
-        else{
-          appState.setdisLiked();
-        }
-        //appState.isLiked(loginprovider.user.uid, post.docid);
         return Column(
           children: [
             Row(
               children: [
                 IconButton(
                   onPressed: (){
-                    if(appState.isliked == false){
-                      post.likeUserList.add(loginprovider.user.uid);
+                    if(liked == false){
+                      //post.likeUserList.add(loginprovider.user.uid);
                       appState.addLike(loginprovider.user.uid, post.docid);
+                      liked = !liked;
                       num = num + 1;
                     }
                     else{
-                      post.likeUserList.remove(loginprovider.user.uid);
+                      //post.likeUserList.remove(loginprovider.user.uid);
                       appState.deleteLike(loginprovider.user.uid, post.docid);
+                      liked = !liked;
                       num = num - 1;
                     }
                   },
-                  icon: appState.isliked ? const Icon(
+                  icon: liked ? const Icon(
                     Icons.favorite,
                     size: 25.0,
                     color: Colors.green,
@@ -93,18 +100,30 @@ class _PostStats extends StatelessWidget {
                   )
                 ),
                 const SizedBox(width: 9.0),
-                Container(
+                IconButton(
+                  icon: Icon(
+                  Icons.mode_comment_outlined,
+                  size: 22.0,
+                  color: Colors.green,
+                ), onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CommentPage(
+                            docid: post.docid,
+                            userimg: post.userimgUrl,
+                            content: post.content,
+                            username: post.username),
+                      ));
+                },)
+                /*Container(
                   padding: const EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
                     color: Colors.green,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.mode_comment_outlined,
-                    size: 20.0,
-                    color: Colors.white,
-                  ),
-                )
+                  child:
+                ),*/
               ],
             ),
             const SizedBox(height: 7),
@@ -121,6 +140,7 @@ class _PostStats extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   post.username,
@@ -139,21 +159,29 @@ class _PostStats extends StatelessWidget {
   }
 }
 
-class _PostHeader extends StatelessWidget {
+class _PostHeader extends StatefulWidget {
   final Story post;
   const _PostHeader({Key? key, required this.post}) : super(key: key);
+
+  @override
+  __PostHeaderState createState() => __PostHeaderState();
+}
+
+class __PostHeaderState extends State<_PostHeader> {
+
   @override
   Widget build(BuildContext context) {
+    final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     return Row(
       children: [
-        ProfileAvatar(imageUrl: post.userimgUrl),
+        ProfileAvatar(imageUrl: widget.post.userimgUrl),
         const SizedBox(width: 8.0),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                post.username,
+                widget.post.username,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
@@ -161,7 +189,7 @@ class _PostHeader extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    post.updatetime,
+                    widget.post.updatetime,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12.0,
@@ -177,8 +205,27 @@ class _PostHeader extends StatelessWidget {
             ],
           ),
         ),
-        IconButton(
-            onPressed: () => print("more"), icon: const Icon(Icons.more_horiz))
+        if(widget.post.uid == loginprovider.user.uid)...[
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_horiz),
+            onSelected: (String result) {
+              setState(() {
+                if(result == "삭제"){
+                  FirebaseFirestore.instance.collection('infostory').doc(widget.post.docid).delete();
+                }
+                if(result == "수정"){
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => editPage(post: widget.post)));
+                }
+              });
+            },
+            itemBuilder: (BuildContext context) => <String>["삭제","수정"]
+                .map((value) => PopupMenuItem(
+              value: value,
+              child: Text(value),
+            ))
+                .toList(),
+          ),
+        ]
       ],
     );
   }
