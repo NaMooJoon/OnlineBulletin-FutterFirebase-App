@@ -104,14 +104,21 @@ class _InformationPageState extends State<InformationPage> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "교회소식",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            color: Colors.black,
+                        Expanded(
+                          child: Text(
+                            "교회소식",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/addinfo');
+                            },
+                            icon: Icon(Icons.add))
                       ],
                     ),
                     Divider(color: Colors.grey, thickness: 0.5),
@@ -177,10 +184,19 @@ class _CardListState extends State<CardList> {
                     // TODO: Center items on the card (103)
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      AspectRatio(
-                        aspectRatio: 1 / 1,
-                        child: Image.network(data['imgURL'] as String,fit: BoxFit.fitWidth),
-                      ),
+                      if (data['contentimgUrl'] != "") ...[
+                        AspectRatio(
+                          aspectRatio: 1 / 1,
+                          child:
+                          Image.network(data['contentimgUrl'] as String,fit: BoxFit.fitWidth),
+                        ),
+                      ] else ...[
+                        AspectRatio(
+                          aspectRatio: 1 / 1,
+                          child:
+                          Image.network('https://firebasestorage.googleapis.com/v0/b/onlinebulletin-29418.appspot.com/o/default_love.jfif?alt=media&token=5ea220c1-8825-4edd-895b-ee94e9d8c33e',fit: BoxFit.fitWidth),
+                        ),
+                      ],
                       Expanded(
                         child: Padding(
                           padding:
@@ -205,7 +221,7 @@ class _CardListState extends State<CardList> {
                               Row(
                                 children: [
                                   Text(
-                                    data['Content'],
+                                    data['content'],
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -219,7 +235,7 @@ class _CardListState extends State<CardList> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                    data['updatetime'],
+                                    data['updatetime'].toDate().toString(),
                                     style: TextStyle(
                                       fontSize: 6,
                                     ),

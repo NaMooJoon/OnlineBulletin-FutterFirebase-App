@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shrine/function/editinfo.dart';
 
 class InfoDetailPage extends StatefulWidget {
   final String documentId;
@@ -23,21 +24,36 @@ class _InfoDetailPageState extends State<InfoDetailPage> {
           if (snapshot.hasError) {
             return Text("Something went wrong");
           }
-
           if (snapshot.hasData && !snapshot.data!.exists) {
-            return Text("Document does not exist");
+            return Center(child: CircularProgressIndicator());
           }
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data =
                 snapshot.data!.data() as Map<String, dynamic>;
             return Scaffold(
               appBar: AppBar(
-                leading: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Back"),
-                ),
+                actions: <Widget>[
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_horiz),
+                    onSelected: (String result) {
+                      setState(() {
+                        if(result == "삭제"){
+                          FirebaseFirestore.instance.collection('infotest').doc(widget.documentId).delete().whenComplete(() => Navigator.pop(context));
+                        }
+                        if(result == "수정"){
+                          Navigator.push(context,MaterialPageRoute(builder: (context) => editinfoPage(docid: widget.documentId,
+                            content: data['content'], title: data['title'], imgUrl: data['contentimgUrl'],)));
+                        }
+                      });
+                    },
+                    itemBuilder: (BuildContext context) => <String>["삭제","수정"]
+                        .map((value) => PopupMenuItem(
+                      value: value,
+                      child: Text(value),
+                    ))
+                        .toList(),
+                  ),
+                ],
                 backgroundColor: Colors.transparent,
                 centerTitle: true,
                 elevation: 0.0,
@@ -51,15 +67,14 @@ class _InfoDetailPageState extends State<InfoDetailPage> {
               body: ListView(
                 children: [
                   const SizedBox(height: 10.0),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 40),
-                    width: MediaQuery.of(context).size.width,
-                    height: 180,
-                    child: Image.network(
-                      data['imgURL'],
-                      fit: BoxFit.fill,
-                    ),
-                  ),
+                  if (data['contentimgUrl'] != "") ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Image.network(data['contentimgUrl']),
+                    )
+                  ] else ...[
+                    const SizedBox.shrink(),
+                  ],
                   const SizedBox(height: 10.0),
                   Row(
                     children: [
@@ -78,7 +93,7 @@ class _InfoDetailPageState extends State<InfoDetailPage> {
                       children: [
                           Flexible(
                             child: Text(
-                              data['Content'],
+                              data['content'],
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -94,7 +109,7 @@ class _InfoDetailPageState extends State<InfoDetailPage> {
               ),
             );
           }
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         });
   }
 }
