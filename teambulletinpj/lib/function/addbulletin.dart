@@ -4,6 +4,7 @@ import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:document_scanner_flutter/configs/configs.dart';
 import 'package:document_scanner_flutter/document_scanner_flutter.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ import 'package:file_picker/file_picker.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:shrine/provider/churchProvider.dart';
 
 class CapturedBulletin extends StatefulWidget {
   CapturedBulletin({Key? key}) : super(key: key);
@@ -24,6 +26,7 @@ class CapturedBulletin extends StatefulWidget {
 class _CapturedBulletinPage extends State<CapturedBulletin> {
   PDFDocument? _scannedDocument;
   File? _scannedDocumentFile;
+  String pdfURL = "";
 
   openPdfScanner(BuildContext context) async {
     var doc = await DocumentScannerFlutter.launchForPdf(
@@ -46,6 +49,36 @@ class _CapturedBulletinPage extends State<CapturedBulletin> {
     }
   }
 
+  Future<DocumentReference<Map<String, dynamic>>> uploadPdf(File? pdf) async {
+    await _uploadPdf(pdf);
+    return FirebaseFirestore.instance.collection('church')
+        .doc(Provider.of<ChurchProvider>(context, listen: false).church.id)
+        .collection('bulletin')
+        .add({
+      'pdfURL' : pdfURL,
+      'createAt': DateTime.now().millisecondsSinceEpoch,
+      'isPDF' : true,
+    });
+  }
+
+
+  Future _uploadPdf(File? pdf) async {
+    if (pdf == null) return;
+
+    final fileName = pdf.path.split('/').last;
+    final destination = 'images/$fileName';
+
+    final ref = FirebaseStorage.instance.ref(destination);
+
+    UploadTask? task = ref.putFile(pdf);
+
+    if (task == null) return ;
+
+    final snapshot = await task.whenComplete(() {});
+    pdfURL = await snapshot.ref.getDownloadURL();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +88,7 @@ class _CapturedBulletinPage extends State<CapturedBulletin> {
         centerTitle: true,
         elevation: 0.0,
         iconTheme: IconThemeData(color: Colors.black),
-        title: Text('주보 스캐',
+        title: Text('주보 스캔',
           style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.black
@@ -72,9 +105,13 @@ class _CapturedBulletinPage extends State<CapturedBulletin> {
                 document: _scannedDocument!,
               )
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text("${_scannedDocumentFile?.path}"),
+
+            Center(
+              child: Builder(builder: (context) {
+                return ElevatedButton(
+                    onPressed: () => uploadPdf(_scannedDocumentFile).then((value) => Navigator.pop(context)),
+                    child: Text("Submit"));
+              }),
             ),
           ],
           Center(
@@ -101,8 +138,9 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
         .doc(bulletinId)
         .collection('bulletin')
         .add({
-      'timestamp' : DateTime.now().millisecondsSinceEpoch,
+      'createAt' : DateTime.now().millisecondsSinceEpoch,
       'html' : text,
+      'isPDF' : false,
     });
   }
 
@@ -294,7 +332,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           txt =
                           '<text removed due to base-64 data, displaying the text could cause the app to crash>';
                         }
-                        addBulletin('YVqEHX4AbfYT17nMncIE', txt);
+                        addBulletin(Provider.of<ChurchProvider>(context, listen: false).church.id, txt);
                         Navigator.pop(context);
                       },
                       child: Text(
@@ -323,37 +361,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(result),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.blueGrey),
-                      onPressed: () {
-                        controller.disable();
-                      },
-                      child: Text('Disable',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Theme.of(context).accentColor),
-                      onPressed: () async {
-                        controller.enable();
-                      },
-                      child: Text(
-                        'Enable',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -364,9 +371,33 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                       style: TextButton.styleFrom(
                           backgroundColor: Theme.of(context).accentColor),
                       onPressed: () {
-                        controller.insertText('Google');
+                        controller.insertHtml(
+                          '''
+                            <h3>주일 오전 예배</h3><br>
+                            <h4>1부: 오전 9시</h4><br>
+                            <h4>2부: 오전 11시 예배인도/ 1부, 2부 : 홍길동 목사</h4><br>
+                            <br>
+                            <pre><strong>*표는 일어서서</strong><br></pre>
+                            <pre>묵 도    --------주 악--------  다함께묵도<br></pre>
+                            <pre>성 시    --------주 악--------  다 함 께<br></pre>
+                            <pre>*찬 송   --------주 악--------  다 함 께<br></pre>
+                            <pre>*성시교독 --------주 악--------  다 함 께<br></pre>
+                            <pre>*신앙고백	--------주 악--------  다 함 께<br></pre>
+                            <pre>*찬 송   --------주 악--------  다 함 께<br></pre>
+                            <pre>목회기독   --------주 악--------  홍길동목사<br></pre>
+                            <pre>성경봉독   --------주 악--------  사 회 자<br></pre>
+                            <pre>찬 양    --------주 악--------  성 가 대<br></pre>
+                            <pre>설 교    --------주 악--------  홍길동목사<br></pre>
+                            <pre>헌금봉헌  --------주 악--------  홍길동집사<br></pre>
+                            <pre>광 고    --------주 악--------  사 회 자<br></pre>
+                            <pre>*찬 송   --------주 악--------  다 함 께<br></pre>
+                            <pre>*축 도   --------주 악--------  홍길동목사<br></pre>
+                            <pre>*폐 회   --------주 악--------  성도의교제<br></pre>
+                          
+                          '''
+                        );
                       },
-                      child: Text('Insert Text',
+                      child: Text('Insert Icons',
                           style: TextStyle(color: Colors.white)),
                     ),
                     SizedBox(
@@ -377,14 +408,28 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           backgroundColor: Theme.of(context).accentColor),
                       onPressed: () {
                         controller.insertHtml(
-                            '''<h3 style="color: blue">한동대학교 채플</h3>
-                            <h5>오늘의 말씀</h5>
-                              <ul>
-                                <li>창세기 1장 1절</li>
-                                <li>레위기 3장 4절</li>
-                              </ul> ''');
+                            '''<style>
+                                #title {
+                                  padding: 7px;
+                                  background-color: DodgerBlue;
+                                  border-radius: 15px;
+                                }
+                                #Handong {
+                                  color: white;
+                                  text-align: center;
+                                }
+                                #title_text {
+                                  font-family: verdana;
+                                  font-size: 20px;
+                                  color: white;
+                                }
+                                </style>
+                                <div id="title">
+                                  <h1 id="Handong">Handong Chapel</h1>
+                                  <p id="title_text">Welcome to handong!</p>
+                                <div>''');
                       },
-                      child: Text('Insert HTML',
+                      child: Text('Insert Title',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ],
@@ -400,7 +445,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           backgroundColor: Theme.of(context).accentColor),
                       onPressed: () async {
                         controller.insertLink(
-                            'Google linked', 'https://google.com', true);
+                            'Handong linked', 'https://hisnet.handong.edu/', true);
                       },
                       child: Text(
                         'Insert Link',
@@ -417,128 +462,14 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                                   .accentColor),
                           onPressed: () {
                             controller.insertNetworkImage(
-                                'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2',
+                                Provider.of<ChurchProvider>(context, listen: false).church.imageURL,
                                 filename: 'Google network image');
                           },
                           child: Text(
-                            'Insert network image',
+                            'Insert my church image',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
-                    // Consumer<ChurchProvider>(
-                    //   builder: (context, churchProvider, child) {
-                    //     return TextButton(
-                    //       style: TextButton.styleFrom(
-                    //           backgroundColor: Theme
-                    //               .of(context)
-                    //               .accentColor),
-                    //       onPressed: () {
-                    //         controller.insertNetworkImage(
-                    //             churchProvider.church.imageURL,
-                    //             filename: 'Google network image');
-                    //       },
-                    //       child: Text(
-                    //         'Insert network image',
-                    //         style: TextStyle(color: Colors.white),
-                    //       ),
-                    //     );
-                    //   }
-                    // ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.blueGrey),
-                      onPressed: () {
-                        controller.addNotification(
-                            'Info notification', NotificationType.info);
-                      },
-                      child:
-                      Text('Info', style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.blueGrey),
-                      onPressed: () {
-                        controller.addNotification(
-                            'Warning notification', NotificationType.warning);
-                      },
-                      child: Text('Warning',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Theme.of(context).accentColor),
-                      onPressed: () async {
-                        controller.addNotification(
-                            'Success notification', NotificationType.success);
-                      },
-                      child: Text(
-                        'Success',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Theme.of(context).accentColor),
-                      onPressed: () {
-                        controller.addNotification(
-                            'Danger notification', NotificationType.danger);
-                      },
-                      child: Text(
-                        'Danger',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.blueGrey),
-                      onPressed: () {
-                        controller.addNotification('Plaintext notification',
-                            NotificationType.plaintext);
-                      },
-                      child: Text('Plaintext',
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Theme.of(context).accentColor),
-                      onPressed: () async {
-                        controller.removeNotification();
-                      },
-                      child: Text(
-                        'Remove',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
                   ],
                 ),
               ),

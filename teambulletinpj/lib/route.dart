@@ -34,7 +34,7 @@ class BulletinApp extends StatelessWidget {
         // TODO: Change backLayer field value to CategoryMenuPage (104)
         initialRoute: '/login',
         routes:{
-          '/login':(context)=> LoginPage(),
+          '/home':(context)=> LoginPage(),
           '/register': (context) => RegisterPage(),
           '/search': (context) => SearchPage(),
           '/home' : (context) => HomePage(),
