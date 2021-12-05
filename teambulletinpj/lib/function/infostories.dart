@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shrine/function/comment.dart';
+import 'package:shrine/function/editstory.dart';
 import 'package:shrine/function/storystruct.dart';
 import 'package:shrine/provider/like_provider.dart';
 import 'package:shrine/provider/login_provider.dart';
@@ -103,7 +106,15 @@ class _PostStats extends StatelessWidget {
                   size: 22.0,
                   color: Colors.green,
                 ), onPressed: () {
-                    Navigator.pushNamed(context, '/comment');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CommentPage(
+                            docid: post.docid,
+                            userimg: post.userimgUrl,
+                            content: post.content,
+                            username: post.username),
+                      ));
                 },)
                 /*Container(
                   padding: const EdgeInsets.all(4.0),
@@ -129,6 +140,7 @@ class _PostStats extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   post.username,
@@ -147,21 +159,29 @@ class _PostStats extends StatelessWidget {
   }
 }
 
-class _PostHeader extends StatelessWidget {
+class _PostHeader extends StatefulWidget {
   final Story post;
   const _PostHeader({Key? key, required this.post}) : super(key: key);
+
+  @override
+  __PostHeaderState createState() => __PostHeaderState();
+}
+
+class __PostHeaderState extends State<_PostHeader> {
+
   @override
   Widget build(BuildContext context) {
+    final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     return Row(
       children: [
-        ProfileAvatar(imageUrl: post.userimgUrl),
+        ProfileAvatar(imageUrl: widget.post.userimgUrl),
         const SizedBox(width: 8.0),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                post.username,
+                widget.post.username,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
@@ -169,7 +189,7 @@ class _PostHeader extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    post.updatetime,
+                    widget.post.updatetime,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12.0,
@@ -185,8 +205,27 @@ class _PostHeader extends StatelessWidget {
             ],
           ),
         ),
-        IconButton(
-            onPressed: () => print("more"), icon: const Icon(Icons.more_horiz))
+        if(widget.post.uid == loginprovider.user.uid)...[
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_horiz),
+            onSelected: (String result) {
+              setState(() {
+                if(result == "삭제"){
+                  FirebaseFirestore.instance.collection('infostory').doc(widget.post.docid).delete();
+                }
+                if(result == "수정"){
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => editPage(post: widget.post)));
+                }
+              });
+            },
+            itemBuilder: (BuildContext context) => <String>["삭제","수정"]
+                .map((value) => PopupMenuItem(
+              value: value,
+              child: Text(value),
+            ))
+                .toList(),
+          ),
+        ]
       ],
     );
   }

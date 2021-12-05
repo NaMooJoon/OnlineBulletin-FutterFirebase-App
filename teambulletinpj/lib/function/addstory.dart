@@ -29,6 +29,7 @@ class _addPageState extends State<addPage> {
     return Form(
       key: _formKey,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           actions: <Widget>[
             TextButton(
@@ -86,14 +87,18 @@ class _addPageState extends State<addPage> {
             ),
             LayoutBuilder(
                 builder: (context, constraints){
-                  return Column(
-                    children: [
-                      TextField(
+                  return Center(
+                    child: Padding(
+                      child: TextField(
+                        decoration: InputDecoration(
+                            labelText: '내용'
+                        ),
                         keyboardType: TextInputType.multiline,
                         maxLines: null,
                         controller: _nameController,
                       ),
-                    ],
+                      padding: EdgeInsets.all(10.0),
+                    ),
                   );
                 })
           ],

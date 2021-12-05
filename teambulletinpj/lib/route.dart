@@ -13,9 +13,12 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
+import 'package:shrine/function/addinfo.dart';
 
 import 'function/addstory.dart';
 import 'function/comment.dart';
+import 'function/editstory.dart';
+import 'function/storystruct.dart';
 import 'home.dart';
 import 'login.dart';
 import 'register.dart';
@@ -41,7 +44,10 @@ class BulletinApp extends StatelessWidget {
           '/search': (context) => SearchPage(),
           '/home' : (context) => HomePage(),
           '/addstory':(context) => addPage(),
-          '/comment':(context) => CommentPage(),
+          '/addinfo':(context) => addinfoPage(),
+          '/comment':(context) => CommentPage(docid:"", userimg: '', content: '', username: '',),
+          '/editstory':(context) => editPage(post: Story(likeUserList: [], content: '', updatetime: '', uid: '', contentimgUrl: '', likeUsers: 0, docid: '', username: '', userimgUrl: '')),
+
         }
       // TODO: Add a theme (103)
     );

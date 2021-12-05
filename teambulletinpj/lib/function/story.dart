@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shrine/function/storystruct.dart';
 import 'package:intl/intl.dart';
+import 'package:shrine/provider/login_provider.dart';
 
 import 'infostories.dart';
 
@@ -17,8 +19,12 @@ class _StoryPageState extends State<StoryPage> {
   List<Story> story = [];
   @override
   Widget build(BuildContext context) {
+    final loginprovider = Provider.of<LoginProvider>(context, listen:false);
     return FutureBuilder(
-      future: FirebaseFirestore.instance.collection('infostory').orderBy('updatetime',descending: true).get(),
+      future: FirebaseFirestore.instance
+          .collection('infostory')
+          .orderBy('updatetime', descending: true)
+          .get(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (!snapshot.hasData) {
           return Center(
@@ -39,42 +45,59 @@ class _StoryPageState extends State<StoryPage> {
             uid: data['uid'],
           );
         }).toList();
-    if (snapshot.connectionState == ConnectionState.done) {
-      return CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            actions: <Widget>[
-              IconButton(
-                  onPressed: (){
-                    Navigator.pushNamed(context, '/addstory');
-                  },
-                  icon: Icon(Icons.add)
-              )
-            ],
-            backgroundColor: Colors.transparent,
-            centerTitle: true,
-            elevation: 0.0,
-            iconTheme: IconThemeData(color: Colors.black),
-            title: Text(
-              '교회 소식',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.black),
+        if (snapshot.connectionState == ConnectionState.done) {
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  actions: <Widget>[
+                    TextButton(
+                        onPressed:(){
+
+                        },
+                        child: Text("내 글보기"),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/addstory');
+                        },
+                        icon: Icon(Icons.add))
+                  ],
+                  backgroundColor: Colors.transparent,
+                  centerTitle: true,
+                  elevation: 0.0,
+                  iconTheme: IconThemeData(color: Colors.black),
+                  title: Text(
+                    '교회 소식',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final Story post = story[index];
+                      return PostContainer(post: post);
+                    },
+                    childCount: story.length,
+                  ),
+                ),
+              ],
             ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                final Story post = story[index];
-                return PostContainer(post: post);
-              },
-              childCount: story.length,
-            ),
-          )
-        ],
-      );
-    }
-    return Text("loading");
+          );
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );Text("loading");
       },
     );
+  }
+
+  Future<void> _refresh() async{
+    await Future.delayed(Duration(seconds: 0),);
+    setState(() {
+
+    });
   }
 }
