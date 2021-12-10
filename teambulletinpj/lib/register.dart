@@ -32,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> registerChurch() {
     final provider = Provider.of<LoginProvider>(context, listen: false);
     DocumentReference ref = _database.collection("church").doc();
-    provider.updateChurchData(ref.id);
+    provider.updateChurchData(ref.id, false);
     return ref.set({
       'churchId' : ref.id,
       'createdAt' : FieldValue.serverTimestamp(),

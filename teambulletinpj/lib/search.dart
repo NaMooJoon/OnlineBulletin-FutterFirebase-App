@@ -187,7 +187,7 @@ class _SearchPageState extends State<SearchPage> {
                                     final provider = Provider.of<LoginProvider>(context, listen: false);
 
                                     if(!(newMemberList.contains(provider.user.uid))) {
-                                      provider.updateChurchData(items[index].id);
+                                      provider.updateChurchData(items[index].id, false);
 
                                       newMemberList.add(provider.user.uid);
                                       await updateMemberList(items[index].id, newMemberList);
