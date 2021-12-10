@@ -21,6 +21,13 @@ class _HomePageState extends State<HomePage> {
   bool _showChurchList = false;
   int _selectedChurch = 0;
 
+  Future<void> updateMemberList(String cid, List<String> newList) {
+    DocumentReference ref = FirebaseFirestore.instance.collection("church").doc(cid);
+    return ref.update({
+      'memberList': newList,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -132,26 +139,46 @@ class _HomePageState extends State<HomePage> {
                             shrinkWrap: true,
                             itemCount: _churchList.length,
                             itemBuilder: (context, index) {
-                              return Column(
-                                children: [
-                                  ListTile(
-                                      contentPadding: const EdgeInsets.only(left:60),
-                                      title: Text(
-                                        _churchList[index].churchName,
-                                        style: _selectedChurch == index ?
-                                        TextStyle(color:Colors.green,fontWeight: FontWeight.bold) :
-                                        TextStyle(color:Colors.grey),
-                                      ),
-                                      onTap: () {
-                                        final churchState = Provider.of<ChurchProvider>(context, listen: false);
-                                        churchState.setChurchData(_churchList[index]);
-                                        setState(() {
-                                          _selectedChurch = index;
-                                        });
-                                        Navigator.pop(context);
-                                      }
-                                  )
-                                ],
+                              return Dismissible(
+                                key: UniqueKey(),
+                                child: ListTile(
+                                    contentPadding: const EdgeInsets.only(left:60),
+                                    title: Text(
+                                      _churchList[index].churchName,
+                                      style: _selectedChurch == index ?
+                                      TextStyle(color:Colors.green,fontWeight: FontWeight.bold) :
+                                      TextStyle(color:Colors.grey),
+                                    ),
+                                    onTap: () {
+                                      final churchState = Provider.of<ChurchProvider>(context, listen: false);
+                                      churchState.setChurchData(_churchList[index]);
+                                      setState(() {
+                                        _selectedChurch = index;
+                                      });
+                                      Navigator.pop(context);
+                                    }
+                                ),
+                                background: Container(color:Colors.green),
+                                onDismissed: (direction) async {
+                                  String cid = _churchList[index].id;
+                                  List<String> newMemberList = _churchList[index].memberList;
+                                  newMemberList.removeWhere((member) => member == loginState.user.uid);
+                                  await updateMemberList(cid, newMemberList);
+                                  loginState.updateChurchData(cid, true);
+
+                                  setState(() {
+                                    _churchList.removeAt(index);
+                                    _existList.removeAt(index);
+
+                                    if (_churchList.length != 0) {
+                                      final churchState = Provider.of<ChurchProvider>(context, listen: false);
+                                      _selectedChurch = 0;
+                                      churchState.setChurchData(_churchList[_selectedChurch]);
+                                    }
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('해당 교회가 리스트에서 제외되었습니다!')));
+                                  Navigator.pop(context);
+                                },
                               );
                             }
                         ) : SizedBox(),

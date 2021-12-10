@@ -153,7 +153,7 @@ class _PraisePageState extends State<PraisePage> {
                               ),
                                 onTap: () {
                                   setState(() {
-                                    _selectedIndex = index;
+                                    _selectedIndex = index+1;
                                   });
                                 }
                             ),
@@ -161,7 +161,7 @@ class _PraisePageState extends State<PraisePage> {
                           ],
                         );
                       }
-                    ) : Image.network(documents[_selectedIndex]['imageURL']),
+                    ) : Image.network(documents[_selectedIndex-1]['imageURL']),
                   ),
                 ],
               ),

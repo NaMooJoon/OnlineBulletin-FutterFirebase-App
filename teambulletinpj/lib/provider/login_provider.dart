@@ -63,8 +63,12 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
-  void updateChurchData(String churchId) {
-    _churchList.add(churchId);
+  void updateChurchData(String churchId, bool deletion) {
+    if(deletion) {
+      _churchList.removeWhere((item) => item == churchId);
+    } else {
+      _churchList.add(churchId);
+    }
     _database.collection('user').doc(user.uid).update({
       'churchList' : _churchList,
     });
