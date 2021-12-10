@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:async';
 import 'dart:io';
 import 'package:provider/provider.dart';
+import 'package:shrine/provider/churchProvider.dart';
 import 'package:shrine/provider/login_provider.dart';
 
 
@@ -118,6 +119,7 @@ class _addPageState extends State<addPage> {
   Future _uploadFile(BuildContext context) async{
     List<String> likeusers =[];
     List<String> comments =[];
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     try{
       final firebaseStorageRef = firebase_storage.FirebaseStorage.instance.ref().child(DateTime.now().millisecondsSinceEpoch.toString());
@@ -126,7 +128,7 @@ class _addPageState extends State<addPage> {
 
       final downUrl = await firebaseStorageRef.getDownloadURL();
 
-      await FirebaseFirestore.instance.collection('infostory').add({
+      await FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id).collection('infostory').add({
         'name' : loginprovider.user.displayName,
         'uid' : loginprovider.user.uid,
         'updatetime': FieldValue.serverTimestamp(),
@@ -152,9 +154,10 @@ class _addPageState extends State<addPage> {
   Future _uploadFileNoImg(BuildContext context) async{
     List<String> likeusers =[];
     List<String> comments =[];
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     try{
-      await FirebaseFirestore.instance.collection('infostory').add({
+      await FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id).collection('infostory').add({
         'name' : loginprovider.user.displayName,
         'uid' : loginprovider.user.uid,
         'updatetime': FieldValue.serverTimestamp(),
