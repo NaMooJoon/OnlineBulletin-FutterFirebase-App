@@ -148,9 +148,10 @@ class CardList extends StatefulWidget {
 class _CardListState extends State<CardList> {
   @override
   Widget build(BuildContext context) {
+    final churchprovider = Provider.of<ChurchProvider>(context, listen: false);
     final ThemeData theme = Theme.of(context);
     return StreamBuilder(
-        stream: FirebaseFirestore.instance
+        stream: FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id)
             .collection('infotest').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {

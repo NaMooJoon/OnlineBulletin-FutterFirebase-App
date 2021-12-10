@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shrine/function/comment.dart';
 import 'package:shrine/function/editstory.dart';
 import 'package:shrine/function/storystruct.dart';
+import 'package:shrine/provider/churchProvider.dart';
 import 'package:shrine/provider/like_provider.dart';
 import 'package:shrine/provider/login_provider.dart';
 
@@ -57,6 +58,7 @@ class _PostStats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late bool liked;
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     final Likeprovider = Provider.of<LikeProvider>(context, listen: false);
     if(post.likeUserList.contains(loginprovider.user.uid)){
@@ -77,13 +79,13 @@ class _PostStats extends StatelessWidget {
                   onPressed: (){
                     if(liked == false){
                       //post.likeUserList.add(loginprovider.user.uid);
-                      appState.addLike(loginprovider.user.uid, post.docid);
+                      appState.addLike(loginprovider.user.uid, churchprovider.church.id, post.docid);
                       liked = !liked;
                       num = num + 1;
                     }
                     else{
                       //post.likeUserList.remove(loginprovider.user.uid);
-                      appState.deleteLike(loginprovider.user.uid, post.docid);
+                      appState.deleteLike(loginprovider.user.uid, churchprovider.church.id, post.docid);
                       liked = !liked;
                       num = num - 1;
                     }
@@ -171,6 +173,7 @@ class __PostHeaderState extends State<_PostHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     return Row(
       children: [
@@ -211,7 +214,7 @@ class __PostHeaderState extends State<_PostHeader> {
             onSelected: (String result) {
               setState(() {
                 if(result == "삭제"){
-                  FirebaseFirestore.instance.collection('infostory').doc(widget.post.docid).delete();
+                  FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id).collection('infostory').doc(widget.post.docid).delete();
                 }
                 if(result == "수정"){
                   Navigator.push(context,MaterialPageRoute(builder: (context) => editPage(post: widget.post)));

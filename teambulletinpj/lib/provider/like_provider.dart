@@ -8,7 +8,7 @@ class LikeProvider extends ChangeNotifier{
   late int count;
   late bool _isliked;
   bool get isliked => _isliked;
-  final docref = FirebaseFirestore.instance.collection('infostory');
+  final docref = FirebaseFirestore.instance.collection('church');
   void setLiked(){
     _isliked = true;
     notifyListeners();
@@ -18,16 +18,16 @@ class LikeProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  void addLike(String uid, String docid){
-    docref.doc(docid).update({
+  void addLike(String uid, String cid, String docid){
+    docref.doc(cid).collection('infostory').doc(docid).update({
       'likeUsers': FieldValue.arrayUnion([uid])
     });
     notifyListeners();
     //docref.where("likeUsers",isEqualTo: userid ).get().then((QuerySnapshot docs) async {}
   }
 
-  void deleteLike(String uid, String docid){
-    docref.doc(docid).update({
+  void deleteLike(String uid, String cid, String docid){
+    docref.doc(cid).collection('infostory').doc(docid).update({
       'likeUsers': FieldValue.arrayRemove([uid])
     });
     notifyListeners();
