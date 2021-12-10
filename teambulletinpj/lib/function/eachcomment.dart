@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shrine/function/comment.dart';
 import 'package:shrine/function/storystruct.dart';
+import 'package:shrine/provider/churchProvider.dart';
 import 'package:shrine/provider/like_provider.dart';
 import 'package:shrine/provider/login_provider.dart';
 
@@ -41,6 +42,7 @@ class _CommentsHeader extends StatelessWidget {
   const _CommentsHeader({Key? key, required this.post}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final churchprovider = Provider.of<ChurchProvider>(context,listen: false);
     final loginprovider = Provider.of<LoginProvider>(context,listen: false);
     return Row(
       children: [
@@ -77,7 +79,7 @@ class _CommentsHeader extends StatelessWidget {
             children: [
               IconButton(
                   onPressed: () {
-                    FirebaseFirestore.instance.collection('infostory').doc(post.docid).collection('comment').doc(post.commentid).delete();
+                    FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id).collection('infostory').doc(post.docid).collection('comment').doc(post.commentid).delete();
                   },
                   icon: Icon(Icons.delete))
             ],

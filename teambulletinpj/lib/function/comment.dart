@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shrine/function/eachcomment.dart';
 import 'package:shrine/function/storystruct.dart';
+import 'package:shrine/provider/churchProvider.dart';
 import 'package:shrine/provider/commenting_provider.dart';
 import 'package:shrine/provider/login_provider.dart';
 
@@ -26,14 +27,16 @@ class CommentPage extends StatefulWidget {
 }
 
 class _CommentPageState extends State<CommentPage> {
+
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   List<Comments> comment = [];
   @override
   Widget build(BuildContext context) {
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     // TODO: implement build
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
+      stream: FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id)
           .collection('infostory')
           .doc(widget.docid)
           .collection('comment')
@@ -172,7 +175,7 @@ class __buildTextComposerState extends State<_buildTextComposer> {
     setState(() {
       isComposing = false;
     });
-    //final commentingprovider = Provider.of<CommentingProvider>(context, listen: false);
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     /*Comments com = Comments(
       username: loginprovider.user.displayName.toString(),
@@ -181,7 +184,7 @@ class __buildTextComposerState extends State<_buildTextComposer> {
       updatetime: FieldValue.serverTimestamp().toString(),
     );*/
     try {
-      await FirebaseFirestore.instance
+      await FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id)
           .collection('infostory')
           .doc(widget.docid)
           .collection('comment')

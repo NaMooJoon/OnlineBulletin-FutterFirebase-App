@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:shrine/function/storystruct.dart';
+import 'package:shrine/provider/churchProvider.dart';
 import 'package:shrine/provider/login_provider.dart';
 
 
@@ -108,9 +109,10 @@ class _editinfoPageState extends State<editinfoPage> {
     );
   }
   Future _updateFile(BuildContext context) async{
+    final churchprovider = Provider.of<ChurchProvider>(context, listen: false);
     final loginprovider = Provider.of<LoginProvider>(context, listen: false);
     try{
-      await FirebaseFirestore.instance.collection('infotest').doc(widget.docid).set({
+      await FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id).collection('infotest').doc(widget.docid).set({
         'title':_titleController.text,
         'content':_nameController.text,
       },SetOptions(merge: true));

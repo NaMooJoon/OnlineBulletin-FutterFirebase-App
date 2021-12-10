@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shrine/function/storystruct.dart';
 import 'package:intl/intl.dart';
+import 'package:shrine/provider/churchProvider.dart';
 import 'package:shrine/provider/login_provider.dart';
 
 import 'infostories.dart';
@@ -19,10 +20,11 @@ class _StoryPageState extends State<StoryPage> {
   List<Story> story = [];
   @override
   Widget build(BuildContext context) {
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     final loginprovider = Provider.of<LoginProvider>(context, listen:false);
     return FutureBuilder(
-      future: FirebaseFirestore.instance
-          .collection('infostory')
+      future: FirebaseFirestore.instance.collection('church')
+          .doc(churchprovider.church.id).collection('infostory')
           .orderBy('updatetime', descending: true)
           .get(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -52,12 +54,12 @@ class _StoryPageState extends State<StoryPage> {
               slivers: [
                 SliverAppBar(
                   actions: <Widget>[
-                    TextButton(
+                    /*TextButton(
                         onPressed:(){
 
                         },
                         child: Text("내 글보기"),
-                    ),
+                    ),*/
                     IconButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/addstory');

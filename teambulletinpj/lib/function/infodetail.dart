@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shrine/function/editinfo.dart';
+import 'package:shrine/provider/churchProvider.dart';
 
 class InfoDetailPage extends StatefulWidget {
   final String documentId;
@@ -14,8 +16,9 @@ class InfoDetailPage extends StatefulWidget {
 class _InfoDetailPageState extends State<InfoDetailPage> {
   @override
   Widget build(BuildContext context) {
+    final churchprovider = Provider.of<ChurchProvider>(context, listen:false);
     return FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance
+        future: FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id)
             .collection("infotest")
             .doc(widget.documentId)
             .get(),
@@ -38,7 +41,7 @@ class _InfoDetailPageState extends State<InfoDetailPage> {
                     onSelected: (String result) {
                       setState(() {
                         if(result == "삭제"){
-                          FirebaseFirestore.instance.collection('infotest').doc(widget.documentId).delete().whenComplete(() => Navigator.pop(context));
+                          FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id).collection('infotest').doc(widget.documentId).delete().whenComplete(() => Navigator.pop(context));
                         }
                         if(result == "수정"){
                           Navigator.push(context,MaterialPageRoute(builder: (context) => editinfoPage(docid: widget.documentId,
