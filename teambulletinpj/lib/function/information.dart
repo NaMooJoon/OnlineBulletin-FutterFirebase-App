@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shrine/provider/churchProvider.dart';
 
 import 'infodetail.dart';
+import 'infoedit.dart';
 
 class InformationPage extends StatefulWidget {
   InformationPage({Key? key}) : super(key: key);
@@ -26,6 +27,21 @@ class _InformationPageState extends State<InformationPage> {
           '교회 정보',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => InformationEditPage()),
+              );
+            },
+            child: Text(
+              '수정',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold,),
+            ),
+            textColor: Colors.green,
+          )
+        ],
       ),
       body: Consumer<ChurchProvider>(
         builder: (context, churchState, _) {
