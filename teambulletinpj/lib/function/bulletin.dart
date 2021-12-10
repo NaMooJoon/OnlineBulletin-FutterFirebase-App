@@ -33,7 +33,9 @@ class _BulletinPageState extends State<BulletinPage> {
           return Text('Something went wrong');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text('Loading');
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
         return Scaffold(
           extendBodyBehindAppBar: true,
@@ -66,7 +68,7 @@ class _BulletinPageState extends State<BulletinPage> {
                   // Specify a key if the Slidable is dismissible.
                   key: const ValueKey(0),
                   // The end action pane is the one at the right or the bottom sie.
-                  startActionPane: ActionPane(
+                  endActionPane: ActionPane(
                     // A motion is a widget used to control how the pane animates.
                     motion: const ScrollMotion(),
 

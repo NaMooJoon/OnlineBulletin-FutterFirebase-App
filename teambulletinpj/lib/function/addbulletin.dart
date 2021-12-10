@@ -361,7 +361,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(result),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -397,7 +397,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           '''
                         );
                       },
-                      child: Text('Insert Icons',
+                      child: Text('Insert Orders',
                           style: TextStyle(color: Colors.white)),
                     ),
                     SizedBox(
