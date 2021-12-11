@@ -60,8 +60,9 @@ class _InformationEditPageState extends State<InformationEditPage> {
   @override
   Widget build(BuildContext context) {
     final churchState = Provider.of<ChurchProvider>(context, listen: false);
-    _url = churchState.church.imageURL;
-
+    if (!_imagePicked) {
+      _url = churchState.church.imageURL;
+    }
     TextEditingController _churchNameController = TextEditingController(text:churchState.church.churchName);
     TextEditingController _callNumberController = TextEditingController(text:churchState.church.callNumber);
     TextEditingController _locationController = TextEditingController(text:churchState.church.location);
