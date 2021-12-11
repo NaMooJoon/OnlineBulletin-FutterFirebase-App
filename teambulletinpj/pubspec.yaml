@@ -28,7 +28,7 @@ dependencies:
   flutter_pdfview: ^1.2.1
   flutter_svg: ^0.22.0
   google_maps_flutter: ^2.0.9
-  geolocator: ^8.0.0
+
 
 dev_dependencies:
   flutter_test:
