@@ -24,10 +24,8 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _locationController = TextEditingController();
   TextEditingController _pastorController = TextEditingController();
 
-  String defaultURL = 'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2';
   File? _image;
-  bool _imagePicked = false;
-  String? _url;
+  String _url = 'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2';
 
   Future<void> registerChurch() {
     final provider = Provider.of<LoginProvider>(context, listen: false);
@@ -39,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
       'churchName': _churchNameController.text,
       'location': _locationController.text,
       'callNumber': _callNumberController.text,
-      'imageURL': _imagePicked ? _url : defaultURL,
+      'imageURL': _url,
       'master': provider.user.uid,
       'pastor': _pastorController.text,
       'memberList': [provider.user.uid],
@@ -52,7 +50,6 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() {
       if(image!=null) {
         _image = File(image.path);
-        _imagePicked = true;
       }
     });
     uploadImage();
@@ -105,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           const SizedBox(height: 10.0),
           Image.network(
-            'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2',
+            _url,
             width: 420,
             height: 200,
             fit: BoxFit.fill,
