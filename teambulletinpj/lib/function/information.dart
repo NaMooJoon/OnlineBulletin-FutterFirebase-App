@@ -237,12 +237,14 @@ class _CardListState extends State<CardList> {
                               const SizedBox(height:5),
                               Row(
                                 children: [
-                                  Text(
-                                    data['content'],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 10,
+                                  Expanded(
+                                    child: Text(
+                                      data['content'],
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                      ),
                                     ),
                                   ),
                                 ],
