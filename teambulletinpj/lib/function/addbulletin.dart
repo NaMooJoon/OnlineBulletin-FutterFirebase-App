@@ -444,11 +444,11 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                       style: TextButton.styleFrom(
                           backgroundColor: Theme.of(context).accentColor),
                       onPressed: () async {
-                        controller.insertLink(
-                            'Handong linked', 'https://hisnet.handong.edu/', true);
+                        controller.insertHtml(
+                            '''<iframe width="100%" height="200" src="https://www.youtube.com/embed/gHSyeAWRSjw"></iframe>''');
                       },
                       child: Text(
-                        'Insert Link',
+                        'Insert Youtube',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
