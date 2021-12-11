@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shrine/function/eachcomment.dart';
-import 'package:shrine/function/storystruct.dart';
 import 'package:shrine/provider/churchProvider.dart';
-import 'package:shrine/provider/commenting_provider.dart';
 import 'package:shrine/provider/login_provider.dart';
 
 import 'commentstruct.dart';
@@ -39,7 +38,7 @@ class _CommentPageState extends State<CommentPage> {
       stream: FirebaseFirestore.instance.collection('church').doc(churchprovider.church.id)
           .collection('infostory')
           .doc(widget.docid)
-          .collection('comment')
+          .collection('comment').orderBy("updatetime",descending: true)
           .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
@@ -49,15 +48,16 @@ class _CommentPageState extends State<CommentPage> {
         }
           comment = snapshot.data!.docs.map<Comments>((DocumentSnapshot document) {
             Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-            return Comments(
-              docid: widget.docid,
-              commentid: document.id,
-              uid: data['uid'],
-              username: data['user'],
-              updatetime: data['updatetime'].toDate().toString(),
-              content: data['content'],
-              userimgUrl: data['userimgUrl'],
-            );
+              return Comments(
+                docid: widget.docid,
+                commentid: document.id,
+                uid: data['uid'],
+                username: data['user'],
+                updatetime: " ",
+                //DateFormat('yyyy-MM-dd HH:mm').format(DateTime.fromMicrosecondsSinceEpoch(data['updatetime'].microsecondsSinceEpoch)).toString(),
+                content: data['content'],
+                userimgUrl: data['userimgUrl'],
+              );
           }).toList();
           return Scaffold(
               appBar: AppBar(
@@ -112,7 +112,6 @@ class _CommentPageState extends State<CommentPage> {
     );
   }
 
-
 }
 class _buildTextComposer extends StatefulWidget{
   final String docid;
@@ -155,14 +154,14 @@ class __buildTextComposerState extends State<_buildTextComposer> {
                   // NEW
                   child: Icon(Icons.send) ,// NEW
                   onPressed: isComposing // NEW
-                      ? () =>
-                      _handleSubmitted(_textController.text) // NEW
+                      ? ()  =>
+                       _handleSubmitted(_textController.text) // NEW
                       : null,
                 )
                     : IconButton(
                   icon: Icon(Icons.send) ,
                   onPressed: isComposing // MODIFIED
-                      ? () => _handleSubmitted(
+                      ? () =>  _handleSubmitted(
                       _textController.text) // MODIFIED
                       : null, // MODIFIED
                 )),

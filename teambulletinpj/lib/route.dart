@@ -20,7 +20,7 @@ class BulletinApp extends StatelessWidget {
         home: LoginPage(),
         initialRoute: '/login',
         routes:{
-          '/home':(context)=> LoginPage(),
+          '/login':(context)=> LoginPage(),
           '/register': (context) => RegisterPage(),
           '/search': (context) => SearchPage(),
           '/home' : (context) => HomePage(),

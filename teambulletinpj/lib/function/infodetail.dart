@@ -91,6 +91,7 @@ class _InfoDetailPageState extends State<InfoDetailPage> {
                       )
                     ],
                   ),
+                  SizedBox(height: 10),
                   Flexible(
                     child: Row(
                       children: [

@@ -34,7 +34,7 @@ class LikeProvider extends ChangeNotifier{
     //docref.where("likeUsers",isEqualTo: userid ).get().then((QuerySnapshot docs) async {}
   }
 
-  void isLiked(String uid, String docid){ //안씀
+  /*void isLiked(String uid, String docid){ //안씀
     FirebaseFirestore.instance
         .collection('infostory')
         .doc(docid)
@@ -54,5 +54,5 @@ class LikeProvider extends ChangeNotifier{
         print('Document does not exist on the database');
       }
     });
-  }
+  }*/
 }

@@ -6,43 +6,30 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shrine/provider/churchProvider.dart';
 
-import 'provider/login_provider.dart';
-
-class RegisterPage extends StatefulWidget {
-  RegisterPage({Key? key}) : super(key: key);
+class InformationEditPage extends StatefulWidget {
+  InformationEditPage({Key? key}) : super(key: key);
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  _InformationEditPageState createState() => _InformationEditPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _InformationEditPageState extends State<InformationEditPage> {
   final FirebaseFirestore _database = FirebaseFirestore.instance;
 
-  TextEditingController _churchNameController = TextEditingController();
-  TextEditingController _callNumberController = TextEditingController();
-  TextEditingController _locationController = TextEditingController();
-  TextEditingController _pastorController = TextEditingController();
-
-  String defaultURL = 'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2';
   File? _image;
   bool _imagePicked = false;
   String? _url;
 
-  Future<void> registerChurch() {
-    final provider = Provider.of<LoginProvider>(context, listen: false);
-    DocumentReference ref = _database.collection("church").doc();
-    provider.updateChurchData(ref.id, false);
-    return ref.set({
-      'churchId' : ref.id,
-      'createdAt' : FieldValue.serverTimestamp(),
-      'churchName': _churchNameController.text,
-      'location': _locationController.text,
-      'callNumber': _callNumberController.text,
-      'imageURL': _imagePicked ? _url : defaultURL,
-      'master': provider.user.uid,
-      'pastor': _pastorController.text,
-      'memberList': [provider.user.uid],
+  Future<void> modifyChurchData(String cid, String name, String location, String callNumber, String pastor) {
+    DocumentReference ref = _database.collection("church").doc(cid);
+    return ref.update({
+      'churchName': name,
+      'location': location,
+      'callNumber': callNumber,
+      'pastor': pastor,
+      'imageURL': _url,
     });
   }
 
@@ -72,6 +59,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final churchState = Provider.of<ChurchProvider>(context, listen: false);
+    _url = churchState.church.imageURL;
+
+    TextEditingController _churchNameController = TextEditingController(text:churchState.church.churchName);
+    TextEditingController _callNumberController = TextEditingController(text:churchState.church.callNumber);
+    TextEditingController _locationController = TextEditingController(text:churchState.church.location);
+    TextEditingController _pastorController = TextEditingController(text:churchState.church.pastor);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -85,13 +80,14 @@ class _RegisterPageState extends State<RegisterPage> {
         actions: <Widget>[
           FlatButton(
             onPressed: () async {
-              if ( _churchNameController.text != '' &&
-                   _callNumberController.text != '' &&
-                   _locationController.text != ''   &&
-                   _pastorController.text != '' ) {
-                await registerChurch();
-                Navigator.of(context).pushNamed('/home');
-              }
+              await modifyChurchData(
+                churchState.church.id,
+                _churchNameController.text,
+                _callNumberController.text,
+                _locationController.text,
+                _pastorController.text,
+              );
+              Navigator.of(context).pushNamed('/home');
             },
             child: Text(
               '완료',
@@ -105,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           const SizedBox(height: 10.0),
           Image.network(
-            'https://mblogthumb-phinf.pstatic.net/20160616_243/yn1984_1466081798536CjTlr_JPEG/2.jpg?type=w2',
+            _url!,
             width: 420,
             height: 200,
             fit: BoxFit.fill,
@@ -128,27 +124,15 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 TextFormField(
                     controller: _churchNameController,
-                    decoration: InputDecoration(
-                      hintText: '교회 이름',
-                    )
                 ),
                 TextFormField(
                     controller: _callNumberController,
-                    decoration: InputDecoration(
-                      hintText: '전화번호',
-                    )
                 ),
                 TextFormField(
                     controller: _locationController,
-                    decoration: InputDecoration(
-                      hintText: '위치',
-                    )
                 ),
                 TextFormField(
                     controller: _pastorController,
-                    decoration: InputDecoration(
-                      hintText: '담임목사',
-                    )
                 ),
               ],
             ),

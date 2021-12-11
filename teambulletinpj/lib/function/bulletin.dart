@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shrine/function/addbulletin.dart';
 import 'package:shrine/function/viewbulletin.dart';
 import 'package:shrine/provider/churchProvider.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 
 class BulletinPage extends StatefulWidget {
@@ -23,7 +24,8 @@ class _BulletinPageState extends State<BulletinPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ChurchProvider>(context, listen: false);
-    final Stream<QuerySnapshot> _bulletinStream = FirebaseFirestore.instance.collection('church').doc(provider.church.id).collection('bulletin').snapshots();
+    CollectionReference bulletin = FirebaseFirestore.instance.collection('church').doc(provider.church.id).collection('bulletin');
+    final Stream<QuerySnapshot> _bulletinStream = bulletin.snapshots();
     return StreamBuilder<QuerySnapshot>(
       stream: _bulletinStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -31,7 +33,9 @@ class _BulletinPageState extends State<BulletinPage> {
           return Text('Something went wrong');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text('Loading');
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
         return Scaffold(
           extendBodyBehindAppBar: true,
@@ -51,45 +55,73 @@ class _BulletinPageState extends State<BulletinPage> {
             child: ListView(
               children: snapshot.data!.docs.map((DocumentSnapshot document) {
                 Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                if (data.isEmpty)
+                print(data.length);
+                if (!document.exists) {
                   return Center(
                     child: TextButton(
-                          onPressed: (){},
-                          child: Text("주보가 없습니다.")
+                        onPressed: (){},
+                        child: Text("주보가 없습니다.")
                     ),
                   );
-                return ListTile(
-                  leading: Icon(FontAwesomeIcons.paperclip),
-                  title: Text(DateFormat('yyyy/MM/dd/').format(DateTime.fromMillisecondsSinceEpoch(data['createAt']))),
-                  trailing: Icon(FontAwesomeIcons.bookOpen),
-                  onTap: () {
-                    if (data['isPDF'] == true) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => viewBulletinPDF(pdfURL: data['pdfURL'])),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => viewBulletinHTML(html: data['html'])),
-                      );
-                    }
-                  },
+                }
+                return Slidable(
+                  // Specify a key if the Slidable is dismissible.
+                  key: const ValueKey(0),
+                  // The end action pane is the one at the right or the bottom sie.
+                  endActionPane: ActionPane(
+                    // A motion is a widget used to control how the pane animates.
+                    motion: const ScrollMotion(),
+
+                    // All actions are defined in the children parameter.
+                    children: [
+                      // A SlidableAction can have an icon and/or a label.
+                      SlidableAction(
+                        onPressed: doNothing,
+                        backgroundColor: Color(0xFF21B7CA),
+                        foregroundColor: Colors.white,
+                        icon: Icons.share,
+                        label: 'Share',
+                      ),
+                      SlidableAction(
+                        onPressed: (context) => {
+                          bulletin
+                              .doc(document.id)
+                              .delete()
+                              .then((value) => print("User deleted"))
+                              .catchError((error) => print("Failed to delete user: $error")),
+                          setState((){}),
+                        },
+                        backgroundColor: Color(0xFFFE4A49),
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: 'Delete',
+                      ),
+                    ],
+                  ),
+
+                  // The child of the Slidable is what the user sees when the
+                  // component is not dragged.
+
+                  child: ListTile(
+                    leading: Icon(FontAwesomeIcons.paperclip),
+                    title: Text(DateFormat('yyyy/MM/dd/').format(DateTime.fromMillisecondsSinceEpoch(data['createAt']))),
+                    trailing: Icon(FontAwesomeIcons.bookOpen),
+                    onTap: () {
+                      if (data['isPDF'] == true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => viewBulletinPDF(pdfURL: data['pdfURL'])),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => viewBulletinHTML(html: data['html'])),
+                        );
+                      }
+                    },
+                  ),
                 );
               }).toList(),
-              // children: <Widget>[
-              //   const SizedBox(height: 80.0),
-              //   if(list.isEmpty) ... [
-              //     TextButton(
-              //         onPressed: (){},
-              //         child: Text("주보가 없습니다.")
-              //     ),
-              //   ] else ... [
-              //     Text(list[0]),
-              //   ],
-              //   // bulletins(),
-              //   const SizedBox(height: 80.0),
-              // ],
             ),
           ),
           floatingActionButton: SpeedDial(
@@ -105,7 +137,7 @@ class _BulletinPageState extends State<BulletinPage> {
                     MaterialPageRoute(
                       builder: (BuildContext context) => CapturedBulletin(),
                     ),
-                  );
+                  ).then((_) => setState(() {}));
                 }
               ),
               SpeedDialChild(
@@ -116,7 +148,7 @@ class _BulletinPageState extends State<BulletinPage> {
                     MaterialPageRoute(
                       builder: (BuildContext context) => HtmlEditorExample(title: "Bulletin editor"),
                     ),
-                  );
+                  ).then((_) => setState(() {}));
                 }
               ),
             ],
@@ -126,12 +158,11 @@ class _BulletinPageState extends State<BulletinPage> {
     );
   }
 
-  // List<Card> bulletins() {
-  //   // CardList를 여기다가 반환해야함.
-  // }
-
   @override
   bool get wantKeepAlive => true;
 }
 
+void doNothing(BuildContext context)  {
+  print("doNothing function called!");
+}
 
